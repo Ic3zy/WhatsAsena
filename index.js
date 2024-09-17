@@ -28,12 +28,6 @@ async function whatsAsena() {
       console.log('Bağlantı açıldı.');
     }
 
-    if (qr) {
-      console.log('QR kodu terminalde gösteriliyor.');
-      const qrFilePath = path.join(__dirname, 'qr-code.png');
-      fs.writeFileSync(qrFilePath, qr, 'base64');
-      console.log('QR kodu kaydedildi:', qrFilePath);
-    }
   });
 
   sock.ev.on("messages.upsert", async (msg) => {
