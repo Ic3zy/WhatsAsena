@@ -18,5 +18,7 @@ module.exports = {
     ALIVEMSG: '{default} {image}', // Bu, botun "alive" komutuyla yanıt olarak göndereceği mesajdır. 'default' varsa varsayılan mesaj gönderilir.
     // Çalışma ortamına göre dosya yolları veya başka konfigürasyonlar
     MEDIA_PATH: path.join(__dirname, 'media'), // Medya dosyalarının bulunduğu klasörün yolu
-    LOG_FILE_PATH: path.join(__dirname, 'logs', 'bot.log') // Log dosyasının yolu
+    LOG_FILE_PATH: path.join(__dirname, 'logs', 'bot.log'), // Log dosyasının yolu
+    
+    ONESTART: true
 };
