@@ -571,7 +571,7 @@ module.exports = {
 				text.startsWith(`${prf}tagall`) ||
 				text.startsWith(`${prf}setvar_`) ||
 				text.startsWith(`${prf}googlesearch`) ||
-				text.startsWith(`${prf}getvar_SUDO`)
+				text.startsWith(`${prf}getvar_`)
 			) {
 				var chId = message.key.participant;
 				let usId = message.key.remoteJid;
