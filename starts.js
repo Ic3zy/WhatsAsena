@@ -88,7 +88,7 @@ async function stindex() {
     });
 }
 async function qrsite() {
-    const process = exec('node qrsite\\server.js');
+    const process = exec('node qrsite/server.js');
     process.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
     });
