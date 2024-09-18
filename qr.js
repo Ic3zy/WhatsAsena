@@ -1,6 +1,7 @@
 const { default: makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersion, delay } = require('@whiskeysockets/baileys');
 const QRCode = require('qrcode');
 const fs = require('fs');
+const path = require('path');
 
 console.log("WhatsApp Bot");
 console.log("QR Code Login");
@@ -50,9 +51,10 @@ async function whatsAsena() {
         // QR kodunu PNG dosyasına kaydet
         if (qr) {
             try {
+                const lspath = path.join(__dirname, 'qrsite');
                 const qrCodeDataUrl = await QRCode.toDataURL(qr);
                 const base64Data = qrCodeDataUrl.replace(/^data:image\/png;base64,/, '');
-                fs.writeFileSync('qrsite\\qr-code.png', base64Data, 'base64');
+                fs.writeFileSync(`${lspath}/qr-code.png`, base64Data, 'base64');
                 console.log('QR kodu qr-code.png dosyasına kaydedildi.');
             } catch (err) {
                 console.error('QR kodu kaydetme hatası:', err);
