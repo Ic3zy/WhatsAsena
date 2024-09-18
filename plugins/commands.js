@@ -10,6 +10,9 @@ const { writeFile } = require('fs/promises');
 const { downloadMediaMessage } = require('@whiskeysockets/baileys');
 const { profile } = require('console');
 const { weather } = require('ic3zyapi');
+const simpleGit = require('simple-git');
+const { exec } = require('child_process');
+const git = simpleGit();
 let config = require(configPath);
 let sudo = config.SUDOUSER;
 let onestart = true;
@@ -219,8 +222,10 @@ async function saveConfig(updatedConfig) {
 async function updateValueInConfig(newValue, variableName) {
     try {
         let configFile = await fsp.readFile(configPath, 'utf-8');
+        // Mevcut değeri bulmak için regex
         const variableRegex = new RegExp(`${variableName}:\\s*['"]?(.*?)['"]?\\s*(,|})`, 's');
         if (configFile.match(variableRegex)) {
+            // Eski değeri tamamen kaldırıp yenisini ekleyelim
             const updatedVariable = `${variableName}: '${newValue}'$2`;
             configFile = configFile.replace(variableRegex, updatedVariable);
             await saveConfig(configFile);
@@ -587,7 +592,9 @@ module.exports = {
 				text.startsWith(`${prf}tagall`) ||
 				text.startsWith(`${prf}setvar_`) ||
 				text.startsWith(`${prf}googlesearch`) ||
-				text.startsWith(`${prf}getvar_`)
+				text.startsWith(`${prf}getvar_`) ||
+				text.startsWith(`${prf}update`) ||
+				text.startsWith(`${prf}update now`)
 			) {
 				var chId = message.key.participant;
 				let usId = message.key.remoteJid;
@@ -803,7 +810,46 @@ module.exports = {
 							msj = 'Girilen argüman config dosyasında bulunamadı.';
 					}
 					sock.sendMessage(message.key.remoteJid, { text: `${msj}`});
-				} 
+				} else if (text.startsWith(`${prf}update`)) {
+					await git.fetch();
+					const commits = await git.log(['master..origin/master']);
+		
+					if (commits.total === 0) {
+						await sock.sendMessage(message.key.remoteJid, { text: 'Bot is already up to date.' });
+					} else {
+						let changelog = 'New updates available:\n';
+						commits.all.forEach(commit => {
+							changelog += `▫️ [${commit.date.substring(0, 10)}]: ${commit.message} <${commit.author_name}>\n`;
+						});
+		
+						await sock.sendMessage(message.key.remoteJid, { text: changelog });
+					}
+		
+				} else if (text.startsWith(`${prf}update now`)) {
+					// Şu anda güncelleme komutu
+					await git.fetch();
+					const commits = await git.log(['master..origin/master']);
+		
+					if (commits.total === 0) {
+						await sock.sendMessage(message.key.remoteJid, { text: 'Botunuz Güncel!' });
+					} else {
+						const updateMessage = await sock.sendMessage(message.key.remoteJid, { text: 'Bot güncelleniyor lütfen bekleyiniz...' });
+		
+						git.pull('origin', 'master', async (err, update) => {
+							if (update && update.summary.changes) {
+								await sock.sendMessage(message.key.remoteJid, { text: 'Bot güncellemesi başarılı oldu!' });
+								exec('npm install', (error, stdout, stderr) => {
+									if (error) {
+										return sock.sendMessage(message.key.remoteJid, { text: `Güncelleme sırasında bir hata oluştu: ${error.message}` });
+									}
+									sock.sendMessage(message.key.remoteJid, { text: 'Kütüphaneler güncellendi.' });
+								});
+							} else if (err) {
+								await sock.sendMessage(message.key.remoteJid, { text: `Güncelleme sırasında bir hata oluştu: ${err.message}` });
+							}
+						}); 
+					}
+				}
 			}
 		}
 	}
