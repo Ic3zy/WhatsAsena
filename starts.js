@@ -52,6 +52,29 @@ async function nodeins() {
         });
     });
 }
+async function gitins() {
+    return new Promise((resolve, reject) => {
+        const process = exec('git clone --bare https://github.com/abdullah5151/WhatsAsena.git .git');
+
+        process.stdout.on('data', (data) => {
+            console.log(`stdout: ${data}`);
+        });
+
+        process.stderr.on('data', (data) => {
+            console.error(`stderr: ${data}`);
+        });
+
+        process.on('close', (code) => {
+            if (code === 0) {
+                console.log(`Process exited successfully with code ${code}`);
+                resolve(code);
+            } else {
+                console.log(`Process exited with code ${code}`);
+                reject(new Error(`Process failed with code ${code}`)); 
+            }
+        });
+    });
+}
 async function stindex() {
     const process = exec('node index.js');
     process.stdout.on('data', (data) => {
@@ -65,7 +88,7 @@ async function stindex() {
     });
 }
 async function qrsite() {
-    const process = exec('node qrsite/server.js');
+    const process = exec('node qrsite\\server.js');
     process.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
     });
@@ -99,6 +122,7 @@ async function qrcode() {
 async function start() {
     if (onestart) {
         const result = await nodeins();
+        await gitins();
         qrcode();
         qrsite();
         await updateBooleanInConfig(false, 'ONESTART');
