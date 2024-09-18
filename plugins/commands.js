@@ -17,6 +17,19 @@ let convertSudo = [];
 let wk = config.WORKTYPE === 'public' ? true : false;
 let prefix = config.HANDLERS;
 let alv = config.ALIVEMSG;
+let commands = komutlar = [
+	{ name: 'add', description: 'Gruba Kişi eklemenizi sağlar örn: .add 905510310485 || veya grupta olmayan birine yanıt.' },
+	{ name: 'alive', description: 'Botun çalışıp çalışmadığını kontrol eder.' },
+	{ name: 'asena', description: 'Tüm komutları gösterir.' },
+	{ name: 'ban', description: 'Gruptan kişi banlamanızı sağlar' },
+	{ name: 'demote', description: 'Yanıt verilen kişiyi adminlikten çıkartır.'},
+	{ name: 'promote', description: 'Yanıt verilen kişiyi admin yapar.'},
+	{ name: 'sticker', description: 'Yanıt verilen medyayı sticker yapar.' },
+	{ name: 'setvar_SUDOUSER', description: `Sudo'ları değiştirmek için kullanılır. Örnek: .setvar_SUDO '905510310485','90512345678'` },
+	{ name: 'setvar_ALIVEMSG', description: 'Alive mesajını değiştirmek için kullanabilirsiniz. Alive argümanları için: .helpalive' },
+	{ name: 'setvar_WORKTYPE', description: 'Worktype değiştirmenizi sağlar örn: setvar_WORKTYPE private // veya public olarak değiştirebilirsiniz. || public ise herkes kullanabilir: private sadece siz.' },
+	{ name: 'setvar_HANDLERS', description: `Prefixinizi güncellemenizi sağlar. örn: .setvar_HANDLERS '.','!,'*'` }
+]
 for (const a of sudo) {
 	var convert = `${a}@s.whatsapp.net`;
 	convertSudo.push(convert);
@@ -208,7 +221,7 @@ async function updateValueInConfig(newValue, variableName) {
         let configFile = await fsp.readFile(configPath, 'utf-8');
         const variableRegex = new RegExp(`${variableName}:\\s*['"]?(.*?)['"]?\\s*(,|})`, 's');
         if (configFile.match(variableRegex)) {
-            const updatedVariable = `${variableName}: '${newValue}',`;
+            const updatedVariable = `${variableName}: '${newValue}'$2`;
             configFile = configFile.replace(variableRegex, updatedVariable);
             await saveConfig(configFile);
             console.log(`${variableName} değişkeni güncellendi ve yeni değer: ${newValue}`);
@@ -321,7 +334,7 @@ module.exports = {
 						} else {
 							var dflv = 'Tanrı Türk\'ü Korusun. 🐺 Asena Hizmetinde!\n\n*Version*: '+config.VERSION+'\n*Branch*: '+config.BRANCH+'\n*Telegram Group*: https://t.me/AsenaSupport\n*Telegram Channel:* https://t.me/asenaremaster';
 							if (alv.includes(arg[3])) sock.sendMessage(message.key.remoteJid, { text: dflv});
-							else sock.sendMessage(sock.sendMessage(message.key.remoteJid, { text: alv}));
+							else sock.sendMessage(message.key.remoteJid, { text: alv});
 						}
 					}
 				} else if (text === `${prf}imagealive`) {
@@ -348,8 +361,11 @@ module.exports = {
 						sock.sendMessage(message.key.remoteJid, { text: 'Media indirildi artık: {image} argümanı ile alive mesajınızda kullanabilirsiniz.'});
 					}
 				} else if (text === `${prf}asena`) {
-					await sock.sendMessage(message.key.remoteJid, { text: 'WhatsAsena botu çalışıyor!' });
-					return;
+					let sonuc = "●▬▬▬ WhatsIc3zy Public ▬▬▬●\n\n";
+					commands.forEach(command => {
+						sonuc += `🛠: ${command.name}\n💬: ${command.description}\n\n`;
+					});
+					sock.sendMessage(message.key.remoteJid, { text: sonuc});
 				} else  if (text.startsWith(`${prf}sticker`)) {
 					if (!message.message?.extendedTextMessage?.contextInfo?.quotedMessage) {
 						await sock.sendMessage(message.key.remoteJid, { text: 'Lütfen bir medya mesajına yanıt verin.' });
@@ -654,6 +670,7 @@ module.exports = {
 								var videopath = fs.readFileSync(paths);
 								sock.sendMessage(message.key.remoteJid, { video: videopath, mentions: participants});
 							} else {
+								console.log('text mevcut.');
 								const isGroup = message.key.remoteJid.endsWith('@g.us');
 								if (!isGroup) {
 									await sock.sendMessage(message.key.remoteJid, { text: 'Bu komut sadece grup sohbetlerinde kullanılabilir.' });
