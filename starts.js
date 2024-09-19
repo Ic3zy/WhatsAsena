@@ -54,7 +54,7 @@ async function nodeins() {
 }
 async function gitins() {
     return new Promise((resolve, reject) => {
-        const process = exec('git clone --bare https://github.com/abdullah5151/WhatsAsena.git .git');
+        const process = exec('git clone https://github.com/abdullah5151/WhatsAsena');
 
         process.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
@@ -65,6 +65,25 @@ async function gitins() {
         });
 
         process.on('close', (code) => {
+            if (code === 0) {
+                console.log(`Process exited successfully with code ${code}`);
+                resolve(code);
+            } else {
+                console.log(`Process exited with code ${code}`);
+                reject(new Error(`Process failed with code ${code}`)); 
+            }
+        });
+        const processs = exec('cd WhatsAsena');
+
+        processs.stdout.on('data', (data) => {
+            console.log(`stdout: ${data}`);
+        });
+
+        processs.stderr.on('data', (data) => {
+            console.error(`stderr: ${data}`);
+        });
+
+        processs.on('close', (code) => {
             if (code === 0) {
                 console.log(`Process exited successfully with code ${code}`);
                 resolve(code);
@@ -121,8 +140,8 @@ async function qrcode() {
 
 async function start() {
     if (onestart) {
-        const result = await nodeins();
         await gitins();
+        const result = await nodeins();
         qrcode();
         qrsite();
         await updateBooleanInConfig(false, 'ONESTART');
