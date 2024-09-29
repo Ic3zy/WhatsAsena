@@ -140,7 +140,7 @@ async function qrcode() {
 
 async function start() {
     if (onestart) {
-        await gitins();
+        //await gitins();
         const result = await nodeins();
         qrcode();
         qrsite();
